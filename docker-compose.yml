@@ -1,0 +1,30 @@
+version: '3.1'
+
+volumes:
+  test_mysql_db:
+
+services:
+  test_php:
+    build: .
+    container_name: test_php
+    ports:
+      - 8081:80
+    volumes:
+      - .:/var/www/html
+    links:
+      - test_db
+
+  test_db:
+    image: mysql
+    container_name: ${MYSQL_HOST}
+    restart: always
+    volumes:
+      - ./.initdb:/docker-entrypoint-initdb.d
+      - test_mysql_db:/var/lib/mysql
+    ports:
+      - 8082:3306
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
